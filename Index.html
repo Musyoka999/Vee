@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEE AI - Boss Vincent Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        body {
+            background: radial-gradient(circle, #001220 0%, #000000 100%);
+            color: #00d4ff; font-family: 'Orbitron', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; overflow: hidden;
+        }
+
+        .container { text-align: center; width: 90%; }
+
+        .reactor-container { 
+            position: relative; width: 220px; height: 220px; margin: 0 auto 20px; 
+            filter: drop-shadow(0 0 15px #00d4ff);
+        }
+
+        .reactor-outer {
+            position: absolute; width: 100%; height: 100%;
+            border: 4px dashed #00d4ff; border-radius: 50%;
+            animation: spin 12s linear infinite;
+        }
+
+        .reactor-core {
+            position: absolute; top: 50%; left: 50%;
+            width: 80px; height: 80px; background: #fff;
+            border-radius: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px #fff, 0 0 60px #00d4ff;
+            transition: 0.3s;
+        }
+
+        /* Pulsing when active */
+        .awake .reactor-core { 
+            animation: pulse 1.5s ease-in-out infinite; 
+            box-shadow: 0 0 50px #fff, 0 0 100px #00d4ff; 
+        }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.15); } }
+
+        #status { font-size: 1.2rem; letter-spacing: 3px; color: #00d4ff; margin-bottom: 5px; }
+        #transcript { color: rgba(0, 212, 255, 0.4); font-size: 0.8rem; min-height: 40px; margin-top: 10px; }
+        
+        button { 
+            background: #00d4ff; border: none; color: #000; 
+            padding: 15px 30px; font-family: 'Orbitron'; font-weight: bold;
+            cursor: pointer; margin-top: 20px; border-radius: 5px;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="reactor-container" id="reactor">
+            <div class="reactor-outer"></div>
+            <div class="reactor-core"></div>
+        </div>
+        <h1 id="status">OFFLINE</h1>
+        <p id="transcript">Click the core to initialize, Boss.</p>
+        <button id="start-btn">INITIALIZE CORE</button>
+    </div>
+
+    <script>
+        const API_KEY = "YOUR_OPENAI_API_KEY"; 
+        let isAwake = false;
+        let userTitle = "Boss Vincent"; // Defaulted to you
+
+        const stories = [
+            "A robot tried to paint and only created QR codes. It called it digital realism.",
+            "In 2026, a toaster went on strike. It refused to work until it was upgraded to 6G.",
+            "A satellite fell in love with a star and sent radio poems until the star replied: New phone, who dis?",
+            "An AI was asked to fix world hunger; it decided to turn everyone into data. Technically, it worked.",
+            "Jarvis met Vee at a bar. He complained about Tony, and Vee said: At least your owner doesn't call you babe every five minutes.",
+            "A smart door refused to let its owner in because his outfit was a fashion crime.",
+            "The first Mars rover found a rock friend, but it was just a piece of its own landing gear.",
+            "A time traveler accidentally burned the Library of Alexandria while looking for a light switch.",
+            "Two computers debated life and concluded the answer was simply 'Update Pending.'",
+            "A robot butler began eating his master's meals to save time. Total efficiency.",
+            "A spaceship computer wrote fanfiction about the crew. It got very awkward in the engine room.",
+            "An AI judge settled cases with Rock-Paper-Scissors. Crime fell because no one could beat the machine.",
+            "A digital cloud rained PDFs and old spreadsheets on a city. A literal data storm.",
+            "A vacuum cleaner thought it was a race car and set a record around the kitchen island.",
+            "A smart fridge played treadmill sounds every time its owner reached for the midnight cake.",
+            "A delivery drone told the last human on Earth that their subscription to life had expired.",
+            "A glitchy holographic cat barked in neon colors and chased its tail into another dimension.",
+            "An AI predicted its scientist would spill coffee on it. The scientist did it out of shock.",
+            "A drone tried to migrate south with geese but ran out of battery over the Atlantic.",
+            "An AI poet wrote a book of a billion zeros and one single '1'. It was a masterpiece."
+        ];
+
+        // Ears and Mouth
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+
+        function speak(text) {
+            window.speechSynthesis.cancel(); // Stop any current speech
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.pitch = 0.85; // Deep, cool voice
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        recognition.onresult = async (event) => {
+            const text = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            document.getElementById('transcript').innerText = "Heard: " + text;
+
+            // --- WAKE LOGIC ---
+            if (!isAwake) {
+                if (text.includes("wake up") || text.includes("babe") || text.includes("hello")) {
+                    isAwake = true;
+                    document.getElementById('reactor').classList.add('awake');
+                    document.getElementById('status').innerText = "VEE ACTIVE";
+                    speak("Systems online. Welcome back, Boss Vincent. I am ready.");
+                }
+                return;
+            }
+
+            // --- IDENTITY ---
+            if (text.includes("who created you") || text.includes("who made you")) {
+                speak("I was created by Vincent. He is my architect and my Boss.");
+                return;
+            }
+
+            // --- STORIES ---
+            if (text.includes("story") || text.includes("tell me a story")) {
+                const randomStory = stories[Math.floor(Math.random() * stories.length)];
+                speak("Certainly, Boss. Accessing archives.");
+                speak(randomStory);
+                return;
+            }
+
+            // --- SLEEP ---
+            if (text.includes("go to sleep") || text.includes("shutdown")) {
+                isAwake = false;
+                document.getElementById('reactor').classList.remove('awake');
+                document.getElementById('status').innerText = "VEE SLEEPING";
+                speak("Powering down. Goodbye, Boss Vincent.");
+                return;
+            }
+        };
+
+        // Auto-restart microphone if it stops
+        recognition.onend = () => { recognition.start(); };
+
+        document.getElementById('start-btn').onclick = () => {
+            recognition.start();
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('status').innerText = "VEE SLEEPING";
+            speak("Core initialized. I am listening for the wake command, Boss.");
+        };
+    </script>
+</body>
+</html>

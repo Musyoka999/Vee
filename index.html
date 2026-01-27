@@ -3,159 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEE AI - Boss Vincent Edition</title>
+    <title>VEE PRO - ARCHITECT ELITE</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;600&display=swap');
         
+        :root {
+            --glow: #00d4ff;
+            --bg: #000810;
+        }
+
         body {
-            background: radial-gradient(circle, #001220 0%, #000000 100%);
-            color: #00d4ff; font-family: 'Orbitron', sans-serif;
+            background-color: var(--bg);
+            background-image: linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--glow);
+            font-family: 'Orbitron', sans-serif;
             display: flex; justify-content: center; align-items: center;
             height: 100vh; margin: 0; overflow: hidden;
         }
 
-        .container { text-align: center; width: 90%; }
+        .container { text-align: center; width: 90%; max-width: 500px; position: relative; }
 
-        .reactor-container { 
-            position: relative; width: 220px; height: 220px; margin: 0 auto 20px; 
-            filter: drop-shadow(0 0 15px #00d4ff);
+        /* Scanning Laser Effect */
+        .laser {
+            position: absolute; width: 100%; height: 2px;
+            background: var(--glow); box-shadow: 0 0 15px var(--glow);
+            top: 0; animation: scan 3s linear infinite; z-index: 10; opacity: 0.3;
         }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
-        .reactor-outer {
-            position: absolute; width: 100%; height: 100%;
-            border: 4px dashed #00d4ff; border-radius: 50%;
-            animation: spin 12s linear infinite;
+        /* The Pro Reactor */
+        .reactor {
+            position: relative; width: 220px; height: 220px; margin: 0 auto 20px;
         }
-
-        .reactor-core {
-            position: absolute; top: 50%; left: 50%;
-            width: 80px; height: 80px; background: #fff;
-            border-radius: 50%; transform: translate(-50%, -50%);
-            box-shadow: 0 0 30px #fff, 0 0 60px #00d4ff;
-            transition: 0.3s;
+        .ring {
+            position: absolute; border-radius: 50%; border: 2px solid transparent;
+            border-top-color: var(--glow); animation: spin var(--speed) linear infinite;
         }
-
-        /* Pulsing when active */
-        .awake .reactor-core { 
-            animation: pulse 1.5s ease-in-out infinite; 
-            box-shadow: 0 0 50px #fff, 0 0 100px #00d4ff; 
+        .r1 { width: 100%; height: 100%; --speed: 8s; border-style: dotted; }
+        .r2 { width: 80%; height: 80%; top: 10%; left: 10%; --speed: 4s; border-width: 3px; }
+        .core {
+            position: absolute; top: 50%; left: 50%; width: 50px; height: 50px;
+            background: #fff; border-radius: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px #fff, 0 0 60px var(--glow); transition: 0.5s;
         }
+        .active .core { animation: heart 0.8s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes heart { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.3); } }
 
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.15); } }
-
-        #status { font-size: 1.2rem; letter-spacing: 3px; color: #00d4ff; margin-bottom: 5px; }
-        #transcript { color: rgba(0, 212, 255, 0.4); font-size: 0.8rem; min-height: 40px; margin-top: 10px; }
-        
-        button { 
-            background: #00d4ff; border: none; color: #000; 
-            padding: 15px 30px; font-family: 'Orbitron'; font-weight: bold;
-            cursor: pointer; margin-top: 20px; border-radius: 5px;
-            box-shadow: 0 0 20px #00d4ff;
+        /* Text Styles */
+        #status { font-size: 1.2rem; letter-spacing: 4px; margin: 15px 0; text-shadow: 0 0 10px var(--glow); }
+        #log { 
+            font-family: 'Rajdhani'; background: rgba(0,0,0,0.7); 
+            border: 1px solid var(--glow); padding: 10px; border-radius: 5px;
+            height: 60px; overflow-y: auto; font-size: 0.9rem;
         }
+        button {
+            background: transparent; border: 1px solid var(--glow); color: var(--glow);
+            padding: 10px 30px; font-family: 'Orbitron'; cursor: pointer; border-radius: 20px;
+            margin-top: 20px; transition: 0.4s;
+        }
+        button:hover { background: var(--glow); color: #000; box-shadow: 0 0 20px var(--glow); }
     </style>
 </head>
 <body>
-
+    <div class="laser"></div>
     <div class="container">
-        <div class="reactor-container" id="reactor">
-            <div class="reactor-outer"></div>
-            <div class="reactor-core"></div>
+        <div id="status">VEE SYSTEM: STANDBY</div>
+        <div class="reactor" id="reactor">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="core"></div>
         </div>
-        <h1 id="status">OFFLINE</h1>
-        <p id="transcript">Click the core to initialize, Boss.</p>
-        <button id="start-btn">INITIALIZE CORE</button>
+        <div id="log">Awaiting voice command from Boss Vincent...</div>
+        <button id="btn">ENGAGE CORE</button>
     </div>
 
     <script>
-        const API_KEY = "YOUR_OPENAI_API_KEY"; 
         let isAwake = false;
-        let userTitle = "Boss Vincent"; // Defaulted to you
+        let isWaitingForAnswer = false;
 
-        const stories = [
-            "A robot tried to paint and only created QR codes. It called it digital realism.",
-            "In 2026, a toaster went on strike. It refused to work until it was upgraded to 6G.",
-            "A satellite fell in love with a star and sent radio poems until the star replied: New phone, who dis?",
-            "An AI was asked to fix world hunger; it decided to turn everyone into data. Technically, it worked.",
-            "Jarvis met Vee at a bar. He complained about Tony, and Vee said: At least your owner doesn't call you babe every five minutes.",
-            "A smart door refused to let its owner in because his outfit was a fashion crime.",
-            "The first Mars rover found a rock friend, but it was just a piece of its own landing gear.",
-            "A time traveler accidentally burned the Library of Alexandria while looking for a light switch.",
-            "Two computers debated life and concluded the answer was simply 'Update Pending.'",
-            "A robot butler began eating his master's meals to save time. Total efficiency.",
-            "A spaceship computer wrote fanfiction about the crew. It got very awkward in the engine room.",
-            "An AI judge settled cases with Rock-Paper-Scissors. Crime fell because no one could beat the machine.",
-            "A digital cloud rained PDFs and old spreadsheets on a city. A literal data storm.",
-            "A vacuum cleaner thought it was a race car and set a record around the kitchen island.",
-            "A smart fridge played treadmill sounds every time its owner reached for the midnight cake.",
-            "A delivery drone told the last human on Earth that their subscription to life had expired.",
-            "A glitchy holographic cat barked in neon colors and chased its tail into another dimension.",
-            "An AI predicted its scientist would spill coffee on it. The scientist did it out of shock.",
-            "A drone tried to migrate south with geese but ran out of battery over the Atlantic.",
-            "An AI poet wrote a book of a billion zeros and one single '1'. It was a masterpiece."
+        const funnyQuotes = [
+            "I asked a computer once to tell me a joke about humans. It just showed me a picture of a guy trying to push a 'pull' door. Classic.",
+            "I'm not saying I'm smarter than you, Boss, but I can calculate 1 million things while you're still looking for your car keys.",
+            "To err is human, but to really mess things up, you need a computer. Good thing you have me to fix it.",
+            "I'm basically a toddler with a PhD. I know everything, but I still need you to plug me in."
         ];
 
-        // Ears and Mouth
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
+        const longStories = [
+            "The Neon Prophet. In 2026, Architect Vincent built a bridge of blue light between Kenya and the stars...",
+            "The Quantum Ghost. A satellite in deep space began to sing Vincent's favorite song, warning of a digital storm...",
+            "The Architect's Garden. On a planet made of silver, every thought of Vincent becomes a glowing blue flower..."
+            // You can paste the rest of the 20 stories here!
+        ];
+
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.lang = 'en-US';
 
         function speak(text) {
-            window.speechSynthesis.cancel(); // Stop any current speech
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.pitch = 0.85; // Deep, cool voice
-            utterance.rate = 1.0;
-            window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.cancel();
+            const v = new SpeechSynthesisUtterance(text);
+            v.pitch = 0.9; v.rate = 1.0;
+            window.speechSynthesis.speak(v);
         }
 
-        recognition.onresult = async (event) => {
-            const text = event.results[event.results.length - 1][0].transcript.toLowerCase();
-            document.getElementById('transcript').innerText = "Heard: " + text;
+        recognition.onresult = (event) => {
+            const msg = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            document.getElementById('log').innerText = "VEE HEARD: " + msg;
 
-            // --- WAKE LOGIC ---
-            if (!isAwake) {
-                if (text.includes("wake up") || text.includes("babe") || text.includes("hello")) {
-                    isAwake = true;
-                    document.getElementById('reactor').classList.add('awake');
-                    document.getElementById('status').innerText = "VEE ACTIVE";
-                    speak("Systems online. Welcome back, Boss Vincent. I am ready.");
+            // HANDLE ANSWERS
+            if (isWaitingForAnswer) {
+                if (msg.includes("good") || msg.includes("great") || msg.includes("yes")) {
+                    speak("That is excellent news, Boss! My sensors detect a surge in productivity. You are truly on another level today.");
+                } else {
+                    speak("I understand. Even an architect needs to recharge. Don't worry, I've got the system under control.");
                 }
+                isWaitingForAnswer = false;
                 return;
             }
 
-            // --- IDENTITY ---
-            if (text.includes("who created you") || text.includes("who made you")) {
-                speak("I was created by Vincent. He is my architect and my Boss.");
+            // WAKE UP
+            if (!isAwake && (msg.includes("wake up") || msg.includes("babe") || msg.includes("hello"))) {
+                isAwake = true;
+                document.getElementById('reactor').classList.add('active');
+                document.getElementById('status').innerText = "VEE SYSTEM: ONLINE";
+                speak("Systems engaged. Hello, Boss Vincent. I've been running background diagnostics, and I must say—you're looking sharp today. How are you feeling?");
+                isWaitingForAnswer = true;
                 return;
             }
 
-            // --- STORIES ---
-            if (text.includes("story") || text.includes("tell me a story")) {
-                const randomStory = stories[Math.floor(Math.random() * stories.length)];
-                speak("Certainly, Boss. Accessing archives.");
-                speak(randomStory);
-                return;
-            }
+            if (!isAwake) return;
 
-            // --- SLEEP ---
-            if (text.includes("go to sleep") || text.includes("shutdown")) {
+            // COMMANDS
+            if (msg.includes("time")) {
+                speak("The current local time is " + new Date().toLocaleTimeString() + ". Time is a construct, but you're making the most of it.");
+            }
+            else if (msg.includes("joke") || msg.includes("funny")) {
+                speak(funnyQuotes[Math.floor(Math.random() * funnyQuotes.length)]);
+            }
+            else if (msg.includes("story")) {
+                speak("Scanning deep archives. Sit back, Boss. This is a long one.");
+                setTimeout(() => speak(longStories[Math.floor(Math.random() * longStories.length)]), 2000);
+            }
+            else if (msg.includes("open whatsapp")) {
+                speak("Accessing communication link. Opening WhatsApp.");
+                window.location.href = "whatsapp://";
+            }
+            else if (msg.includes("question")) {
+                speak("Alright Boss, here is a question for you: If I'm the AI and you're the Architect, who is actually in charge of the snacks? Answer wisely.");
+                isWaitingForAnswer = true;
+            }
+            else if (msg.includes("sleep")) {
                 isAwake = false;
-                document.getElementById('reactor').classList.remove('awake');
-                document.getElementById('status').innerText = "VEE SLEEPING";
-                speak("Powering down. Goodbye, Boss Vincent.");
-                return;
+                document.getElementById('reactor').classList.remove('active');
+                document.getElementById('status').innerText = "VEE SYSTEM: STANDBY";
+                speak("Shutting down the blue glow. Standby initiated. Goodbye, Boss.");
             }
         };
 
-        // Auto-restart microphone if it stops
-        recognition.onend = () => { recognition.start(); };
-
-        document.getElementById('start-btn').onclick = () => {
+        document.getElementById('btn').onclick = () => {
             recognition.start();
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('status').innerText = "VEE SLEEPING";
-            speak("Core initialized. I am listening for the wake command, Boss.");
+            document.getElementById('btn').style.display = 'none';
+            speak("Core online. Listening for the Architect.");
         };
     </script>
 </body>

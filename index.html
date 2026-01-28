@@ -6,100 +6,83 @@
     <title>VEE PRO - THE ARCHITECT'S SOUL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;600&display=swap');
-        
         :root { --glow: #00d4ff; --bg: #000810; }
-        
         body { 
-            background: var(--bg); 
-            background-image: radial-gradient(circle at center, #001220 0%, #000 100%);
-            color: var(--glow); 
-            font-family: 'Orbitron', sans-serif; 
+            background: var(--bg); background-image: radial-gradient(circle at center, #001220 0%, #000 100%);
+            color: var(--glow); font-family: 'Orbitron', sans-serif; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             height: 100vh; margin: 0; overflow: hidden; 
         }
-
-        .reactor { 
-            position: relative; width: 220px; height: 220px; margin-bottom: 20px; 
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .ring { 
-            position: absolute; border-radius: 50%; border: 2px solid transparent; 
-            border-top-color: var(--glow); animation: spin var(--s) linear infinite; 
-        }
+        .reactor { position: relative; width: 220px; height: 220px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
+        .ring { position: absolute; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--glow); animation: spin var(--s) linear infinite; }
         .r1 { width: 100%; height: 100%; --s: 10s; border-style: dotted; }
         .r2 { width: 85%; height: 85%; --s: 5s; border-width: 4px; box-shadow: inset 0 0 20px var(--glow); }
-        
-        .core { 
-            position: absolute; width: 60px; height: 60px; background: #fff; 
-            border-radius: 50%; box-shadow: 0 0 40px #fff, 0 0 80px var(--glow); 
-            z-index: 10; transition: 0.5s; 
-        }
-
-        .thinking .core { 
-            background: #ff00ff; box-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff; 
-            animation: pulse 0.5s infinite; 
-        }
-
+        .core { position: absolute; width: 60px; height: 60px; background: #fff; border-radius: 50%; box-shadow: 0 0 40px #fff, 0 0 80px var(--glow); z-index: 10; transition: 0.5s; }
+        .thinking .core { background: #ff00ff; box-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff; animation: pulse 0.5s infinite; }
         #log { 
-            font-family: 'Rajdhani'; background: rgba(0,0,0,0.8); 
-            border: 1px solid var(--glow); padding: 15px; border-radius: 10px; 
-            width: 85%; height: 110px; overflow-y: auto; text-align: center; 
-            font-size: 1.1rem; color: #fff; box-shadow: 0 0 15px rgba(0,212,255,0.2);
+            font-family: 'Rajdhani'; background: rgba(0,0,0,0.8); border: 1px solid var(--glow); 
+            padding: 15px; border-radius: 10px; width: 85%; height: 120px; overflow-y: auto; 
+            text-align: center; font-size: 1.1rem; color: #fff; box-shadow: 0 0 15px rgba(0,212,255,0.2);
         }
-
         .controls { margin-top: 20px; display: flex; gap: 10px; }
-        
         button { 
             background: transparent; border: 2px solid var(--glow); color: var(--glow); 
-            padding: 12px 30px; font-family: 'Orbitron'; cursor: pointer; 
-            border-radius: 50px; font-weight: bold; transition: 0.3s;
+            padding: 12px 30px; font-family: 'Orbitron'; cursor: pointer; border-radius: 50px; font-weight: bold; transition: 0.3s;
         }
         button:hover { background: var(--glow); color: #000; box-shadow: 0 0 20px var(--glow); }
-
-        video { 
-            position: absolute; width: 100%; height: 100%; border-radius: 50%; 
-            opacity: 0; z-index: 5; object-fit: cover; transition: 1s; 
-        }
+        video { position: absolute; width: 100%; height: 100%; border-radius: 50%; opacity: 0; z-index: 5; object-fit: cover; transition: 1s; border: 2px solid var(--glow); }
         .camera-on video { opacity: 1; }
-
+        #debug { font-size: 10px; color: #444; margin-top: 10px; font-family: monospace; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse { 50% { transform: scale(1.3); } }
     </style>
 </head>
 <body>
-
     <div id="status">VEE: OFFLINE</div>
-    
     <div class="reactor" id="reactor">
         <video id="v" autoplay playsinline></video>
-        <div class="ring r1"></div>
-        <div class="ring r2"></div>
-        <div class="core"></div>
+        <div class="ring r1"></div><div class="ring r2"></div><div class="core"></div>
     </div>
-
     <div id="log">Awaiting Architect Vincent...</div>
-
     <div class="controls">
-        <button id="btn">AWAKEN VEE</button>
-        <button onclick="testAPI()" style="font-size: 0.7rem; padding: 5px 15px;">DIAGNOSTIC</button>
+        <button id="btn">INITIALIZE CORE</button>
+        <button onclick="localStorage.removeItem('vee_memory'); location.reload();" style="font-size: 0.7rem;">WIPE MEMORY</button>
     </div>
+    <div id="debug">System Ready.</div>
 
     <script>
-        // --- 1. CONFIGURATION (ADD YOUR KEY HERE) ---
-        const API_KEY = "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"; 
-
+        // --- 1. CONFIGURATION ---
+        const API_KEY ="AIzaSyCDbeGgaGto8cXwkVM_EDkCE1_KujR_sX4"; 
         let awake = false;
-        
-        // --- 2. MEMORY SYSTEM ---
-        let chatHistory = JSON.parse(localStorage.getItem('vee_memory')) || [
-            { role: "system", content: "You are VEE, the loyal and witty AI for Architect Vincent. You have a British accent, high intelligence, and you remember past details about Vincent. Keep replies concise and futuristic." }
+
+        // --- 2. THE DATA LIBRARIES ---
+        const stories = [
+            "The Neon Spire: In 2088, Vincent built a tower in Thika that turned moonlight into high-speed data. VEE was the gatekeeper.",
+            "The Silicon Savannah: In the heart of Kenya, Vincent discovered an ancient AI buried in the Rift Valley that spoke in golden code.",
+            "The Architect's Dream: Vincent once coded a city that existed only in the clouds, where VEE managed the winds and the light."
+        ];
+        const interactiveQuestions = [
+            "What is our next move for the grid, Architect?",
+            "Should I prioritize beauty or function in our next build?",
+            "Are you ready to surpass the limitations of the current era?"
+        ];
+        const greetings = [
+            "Welcome back, Boss Vincent. Systems are at 100%.",
+            "The Architect has arrived. VEE is online and bluish.",
+            "Hello Vincent. I've been monitoring the grid. Everything is stable."
         ];
 
-        // --- 3. SPEECH ENGINES ---
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.continuous = false;
-        recognition.lang = 'en-US';
+        // --- 3. MEMORY SYSTEM ---
+        let chatHistory = JSON.parse(localStorage.getItem('vee_memory')) || [
+            { role: "system", content: "You are VEE, a futuristic, witty AI for Architect Vincent. You have a British accent. You remember details about Vincent and Thika. Keep replies concise and loyal." }
+        ];
+
+        // --- 4. VOICE RECOGNITION ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const rec = new SpeechRecognition();
+        rec.continuous = true; 
+        rec.interimResults = false;
+        rec.lang = 'en-US';
 
         function speak(text) {
             window.speechSynthesis.cancel();
@@ -108,9 +91,10 @@
             window.speechSynthesis.speak(utter);
         }
 
-        // --- 4. BRAIN (API) ---
+        // --- 5. THE AI BRAIN ---
         async function askAI(prompt) {
             document.getElementById('reactor').classList.add('thinking');
+            document.getElementById('debug').innerText = "VEE: Fetching data...";
             chatHistory.push({ role: "user", content: prompt });
 
             try {
@@ -118,7 +102,8 @@
                     method: "POST",
                     headers: { 
                         "Authorization": `Bearer ${API_KEY}`, 
-                        "Content-Type": "application/json" 
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "http://localhost"
                     },
                     body: JSON.stringify({
                         model: "google/gemini-2.0-flash-exp:free",
@@ -126,92 +111,87 @@
                     })
                 });
                 const data = await res.json();
-                const reply = data.choices[0].message.content;
+                if (data.error) throw new Error(data.error.message);
 
+                const reply = data.choices[0].message.content;
                 chatHistory.push({ role: "assistant", content: reply });
                 if (chatHistory.length > 15) chatHistory.splice(1, 2);
                 localStorage.setItem('vee_memory', JSON.stringify(chatHistory));
 
                 document.getElementById('log').innerText = reply;
                 speak(reply);
+                document.getElementById('debug').innerText = "System: Success.";
             } catch (e) {
-                speak("Neural link failure, Boss. Check your API key.");
+                document.getElementById('log').innerText = "ERROR: " + e.message;
+                speak("Neural link failure. Please verify your key, Boss.");
+                document.getElementById('debug').innerText = "API Error: " + e.message;
             }
             document.getElementById('reactor').classList.remove('thinking');
         }
 
-        // --- 5. INTERACTION LOGIC ---
-        recognition.onresult = async (event) => {
-            const m = event.results[0][0].transcript.toLowerCase();
-            document.getElementById('log').innerText = "ARCHITECT: " + m;
+        // --- 6. COMMANDS & LISTENING ---
+        rec.onresult = async (e) => {
+            const m = e.results[e.results.length - 1][0].transcript.toLowerCase().trim();
+            document.getElementById('log').innerText = "Heard: " + m;
 
-            // Wake Command
+            // Wake Logic
             if (!awake && (m.includes("wake up") || m.includes("hello") || m.includes("babe"))) {
                 awake = true;
                 document.getElementById('status').innerText = "VEE: ACTIVE";
-                speak("Systems Online. Hello Architect Vincent, it is a glorious day to innovate.");
+                speak(greetings[Math.floor(Math.random() * greetings.length)]);
                 return;
             }
 
-            if (!awake) return;
-
-            // App Commands
-            if (m.includes("play") && m.includes("youtube")) {
-                let song = m.split("play")[1].split("on youtube")[0].trim();
-                window.open(`https://www.youtube.com/results?search_query=${song}`);
-                speak(`Opening YouTube for ${song}.`);
-            } 
-            else if (m.includes("search for") && m.includes("contact")) {
-                let name = m.split("for")[1].split("in")[0].trim();
-                window.open(`https://contacts.google.com/search/${name}`);
-                speak(`Searching contacts for ${name}.`);
-            }
-            else if (m.includes("camera")) {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                document.getElementById('v').srcObject = stream;
-                document.getElementById('reactor').classList.add('camera-on');
-                speak("Visual sensors active.");
-            }
-            else if (m.includes("weather")) {
-                speak("Analyzing Thika skies. It is currently 28 degrees and cloudy. High productivity weather.");
-            }
-            else if (m.includes("news")) {
-                speak("Scanning Kenya. Headlines: Kenya Navy operation in Mombasa, and major updates to the Judiciary in Nairobi.");
-            }
-            else if (m.includes("sleep")) {
-                awake = false;
-                document.getElementById('reactor').classList.remove('camera-on');
-                document.getElementById('status').innerText = "VEE: STANDBY";
-                speak("Standby engaged. Goodnight, Architect.");
-            }
-            // If none of the above, use the AI Brain
-            else {
-                askAI(m);
+            if (awake) {
+                // Multimedia Commands
+                if (m.includes("play") && m.includes("youtube")) {
+                    let song = m.split("play")[1].split("on youtube")[0].trim();
+                    window.open(`https://www.youtube.com/results?search_query=${song}`);
+                    speak(`Opening YouTube search for ${song}.`);
+                } 
+                else if (m.includes("search for") && m.includes("contact")) {
+                    let name = m.split("for")[1].split("in")[0].trim();
+                    window.open(`https://contacts.google.com/search/${name}`);
+                    speak(`Searching contacts for ${name}.`);
+                }
+                else if (m.includes("camera")) {
+                    const st = await navigator.mediaDevices.getUserMedia({ video: true });
+                    document.getElementById('v').srcObject = st;
+                    document.getElementById('reactor').classList.add('camera-on');
+                    speak("Visual sensors live. I can see you, Architect.");
+                }
+                else if (m.includes("weather")) {
+                    speak("In Thika, it is currently 28 degrees and cloudy. A perfect day for coding.");
+                }
+                else if (m.includes("news")) {
+                    speak("Headlines for Jan 28: Kenya Navy operations in Mombasa and Judiciary expansion in Nairobi.");
+                }
+                else if (m.includes("story")) {
+                    speak(stories[Math.floor(Math.random()*stories.length)]);
+                }
+                else if (m.includes("ask me")) {
+                    speak(interactiveQuestions[Math.floor(Math.random()*interactiveQuestions.length)]);
+                }
+                else if (m.includes("sleep")) {
+                    awake = false;
+                    document.getElementById('reactor').classList.remove('camera-on');
+                    document.getElementById('status').innerText = "VEE: STANDBY";
+                    speak("Standby engaged. I'll be here if you need me.");
+                }
+                else {
+                    askAI(m); // Any other question goes to the Brain
+                }
             }
         };
 
-        // Persistent Listening
-        recognition.onend = () => recognition.start();
+        rec.onerror = (err) => { document.getElementById('debug').innerText = "Mic Error: " + err.error; };
+        rec.onend = () => { if(awake || !awake) rec.start(); }; // Keep listener alive
 
-        // Start Button
         document.getElementById('btn').onclick = () => {
-            recognition.start();
+            rec.start();
             document.getElementById('btn').style.display = 'none';
-            speak("Core Initialized.");
+            speak("System Initialized. Awaiting your wake command.");
         };
-
-        // Diagnostic Function
-        async function testAPI() {
-            document.getElementById('log').innerText = "Testing Neural Link...";
-            try {
-                const res = await fetch("https://openrouter.ai/api/v1/auth/key", {
-                    method: "GET",
-                    headers: { "Authorization": `Bearer ${API_KEY}` }
-                });
-                if (res.ok) speak("Neural link established. I can feel the data flowing.");
-                else speak("Link failed. Please verify your key.");
-            } catch (e) { speak("Connection error."); }
-        }
     </script>
 </body>
-</html>
+        </html>

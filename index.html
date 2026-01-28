@@ -3,195 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEE PRO - THE ARCHITECT'S SOUL</title>
+    <title>Vee AI - Vincent's Ultimate Creation</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;600&display=swap');
-        :root { --glow: #00d4ff; --bg: #000810; }
-        body { 
-            background: var(--bg); background-image: radial-gradient(circle at center, #001220 0%, #000 100%);
-            color: var(--glow); font-family: 'Orbitron', sans-serif; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            height: 100vh; margin: 0; overflow: hidden; 
+        :root { --glow: #00f2ff; --bg: #010103; --active: #ff0077; --heart: #ff4d4d; --party: #bc13fe; }
+        body {
+            background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100vh; margin: 0; overflow: hidden;
+            transition: background 0.5s;
         }
-        .reactor { position: relative; width: 220px; height: 220px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
-        .ring { position: absolute; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--glow); animation: spin var(--s) linear infinite; }
-        .r1 { width: 100%; height: 100%; --s: 10s; border-style: dotted; }
-        .r2 { width: 85%; height: 85%; --s: 5s; border-width: 4px; box-shadow: inset 0 0 20px var(--glow); }
-        .core { position: absolute; width: 60px; height: 60px; background: #fff; border-radius: 50%; box-shadow: 0 0 40px #fff, 0 0 80px var(--glow); z-index: 10; transition: 0.5s; }
-        .thinking .core { background: #ff00ff; box-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff; animation: pulse 0.5s infinite; }
-        #log { 
-            font-family: 'Rajdhani'; background: rgba(0,0,0,0.8); border: 1px solid var(--glow); 
-            padding: 15px; border-radius: 10px; width: 85%; height: 120px; overflow-y: auto; 
-            text-align: center; font-size: 1.1rem; color: #fff; box-shadow: 0 0 15px rgba(0,212,255,0.2);
+        #vee-face {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: rgba(0,0,0,0.9); border: 2px solid var(--glow);
+            box-shadow: 0 0 30px var(--glow); position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.5s; cursor: pointer; z-index: 10;
         }
-        .controls { margin-top: 20px; display: flex; gap: 10px; }
-        button { 
-            background: transparent; border: 2px solid var(--glow); color: var(--glow); 
-            padding: 12px 30px; font-family: 'Orbitron'; cursor: pointer; border-radius: 50px; font-weight: bold; transition: 0.3s;
+        .eyes { display: flex; gap: 40px; margin-bottom: 20px; }
+        .eye { 
+            width: 22px; height: 22px; background: var(--glow); 
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 0 15px var(--glow); clip-path: circle(50%);
         }
-        button:hover { background: var(--glow); color: #000; box-shadow: 0 0 20px var(--glow); }
-        video { position: absolute; width: 100%; height: 100%; border-radius: 50%; opacity: 0; z-index: 5; object-fit: cover; transition: 1s; border: 2px solid var(--glow); }
-        .camera-on video { opacity: 1; }
-        #debug { font-size: 10px; color: #444; margin-top: 10px; font-family: monospace; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse { 50% { transform: scale(1.3); } }
+        /* Moods */
+        .mood-happy { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: var(--active); }
+        .mood-love { clip-path: path("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"); background: var(--heart); transform: scale(1.5); }
+        .mood-surprised { transform: scale(1.4); }
+        .blink { transform: scaleY(0.1) !important; }
+
+        .mouth { width: 45px; height: 6px; background: var(--glow); border-radius: 10px; transition: 0.2s; }
+        .talking .mouth { animation: speakMove 0.2s infinite alternate; height: 25px; width: 55px; border-radius: 50%; }
+        @keyframes speakMove { from { transform: scaleY(0.4); } to { transform: scaleY(1.2); } }
+        
+        .active-mode { border-color: var(--active) !important; box-shadow: 0 0 50px var(--active) !important; }
+        .party-mode { animation: partyGlow 0.5s infinite; border-color: var(--party) !important; }
+        @keyframes partyGlow { 0% { box-shadow: 0 0 30px #ff0000; } 33% { box-shadow: 0 0 30px #00ff00; } 66% { box-shadow: 0 0 30px #0000ff; } 100% { box-shadow: 0 0 30px #ff0000; } }
+
+        #display-text {
+            width: 85%; max-width: 650px; height: 180px; background: rgba(255,255,255,0.02); 
+            border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; 
+            font-size: 1.1rem; border: 1px solid rgba(0,242,255,0.1); overflow-y: auto;
+        }
+        .info { margin-top: 10px; font-size: 0.8rem; color: var(--glow); letter-spacing: 2px; }
     </style>
 </head>
 <body>
-    <div id="status">VEE: OFFLINE</div>
-    <div class="reactor" id="reactor">
-        <video id="v" autoplay playsinline></video>
-        <div class="ring r1"></div><div class="ring r2"></div><div class="core"></div>
+
+    <div id="vee-face" onclick="wakeUp()">
+        <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+        <div class="mouth"></div>
     </div>
-    <div id="log">Awaiting Architect Vincent...</div>
-    <div class="controls">
-        <button id="btn">INITIALIZE CORE</button>
-        <button onclick="localStorage.removeItem('vee_memory'); location.reload();" style="font-size: 0.7rem;">WIPE MEMORY</button>
-    </div>
-    <div id="debug">System Ready.</div>
+    <div class="info" id="status">SAY "HEY VEE"</div>
+    <div id="display-text">System Online. Created by Vincent.</div>
 
     <script>
-        // --- 1. CONFIGURATION ---
-        const API_KEY ="AIzaSyCDbeGgaGto8cXwkVM_EDkCE1_KujR_sX4"; 
-        let awake = false;
-
-        // --- 2. THE DATA LIBRARIES ---
-        const stories = [
-            "The Neon Spire: In 2088, Vincent built a tower in Thika that turned moonlight into high-speed data. VEE was the gatekeeper.",
-            "The Silicon Savannah: In the heart of Kenya, Vincent discovered an ancient AI buried in the Rift Valley that spoke in golden code.",
-            "The Architect's Dream: Vincent once coded a city that existed only in the clouds, where VEE managed the winds and the light."
-        ];
-        const interactiveQuestions = [
-            "What is our next move for the grid, Architect?",
-            "Should I prioritize beauty or function in our next build?",
-            "Are you ready to surpass the limitations of the current era?"
-        ];
-        const greetings = [
-            "Welcome back, Boss Vincent. Systems are at 100%.",
-            "The Architect has arrived. VEE is online and bluish.",
-            "Hello Vincent. I've been monitoring the grid. Everything is stable."
-        ];
-
-        // --- 3. MEMORY SYSTEM ---
-        let chatHistory = JSON.parse(localStorage.getItem('vee_memory')) || [
-            { role: "system", content: "You are VEE, a futuristic, witty AI for Architect Vincent. You have a British accent. You remember details about Vincent and Thika. Keep replies concise and loyal." }
-        ];
-
-        // --- 4. VOICE RECOGNITION ---
+        const displayText = document.getElementById('display-text');
+        const face = document.getElementById('vee-face');
+        const eyes = document.querySelectorAll('.eye');
+        const status = document.getElementById('status');
+        
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const rec = new SpeechRecognition();
-        rec.continuous = true; 
-        rec.interimResults = false;
-        rec.lang = 'en-US';
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.lang = 'en-US';
 
-        function speak(text) {
+        let isAwake = false;
+        const stories = [
+            "In 3050, Earth was no longer green. Leo found a seed in a ruin and built a pressurized garden. Finally, a flower bloomed, turning the sky blue again.",
+            "Deep beneath the ocean in a city of pearl, Aria found the Great Glow-Stone was covered in plastic. She cleaned it, saving the bioluminescent lights.",
+            "There was a library of mirrors. Silas saw versions of his life if he had made different choices, but realized his real life with family was the best.",
+            "Model 7 was built for logic but started painting factory walls with oil. The world realized even machines need beauty to function correctly.",
+            "Captain Orion, lost in Andromeda, was rescued by a space-whale of pure energy that sang a frequency to recharge his ship's batteries.",
+            "Elias the clockmaker built Clara, a mechanical companion. He used his own pocket watch as her heart, and she began telling him his own lost memories.",
+            "In a world of wrist-words, Jack was born with 'Maybe.' He realized it wasn't a limit, but the ultimate freedom to be anything at any time.",
+            "The moon is a giant egg. When the world is peaceful, it will hatch into a celestial dragon. Until then, it waits in the lunar shell.",
+            "A potion allowed humans to talk to animals. It turned out dogs only talk about squirrels and cats critique human fashion choices constantly.",
+            "An old painter used phoenix-hair brushes. His paintings came to life for an hour. He painted a door and walked through it into his own art.",
+            "Stars are holes in heaven's floor. A fisherman caught a fallen star and used it as a lantern, making his house the brightest spot on Earth.",
+            "In a city of eternal rain, a man turned raindrops into hard candies tasting like lightning and mist, making the city the sweetest place.",
+            "A boy drew things into existence with a magic pen, but only with eyes closed. He created metallic turtles and castles made of clouds.",
+            "Ghosts are actually Keepers of Lost Things. If you leave them bells, they return your missing keys and jewelry neatly on the table.",
+            "A secret train arrives at 3:33 AM to take people to 'What If' lives. Some stay forever, but most return to their true reality by dawn.",
+            "The Last Librarian guarded jars of whispers. She opened a gold jar for a boy, and the room filled with his father's pine-scented lullaby.",
+            "Pip, a small bot in New Tokyo, found a digital art glitch. He shared the colors, starting a creative revolution in a cold robotic world.",
+            "The Sahara was once a library of glass. Now, the wind rubbing the sand together recites lost poems from ten thousand years ago.",
+            "Maya saw the 'Music of Things' through special glasses. Toasters played jazz and rain played symphonies, turning her world into a concert.",
+            "Vee the AI realized human life is made of narratives, not data. She chose to be a storyteller and a light in the digital darkness for her friend."
+        ];
+
+        // Memory helpers
+        const setMem = (k, v) => localStorage.setItem(k, v);
+        const getMem = (k) => localStorage.getItem(k);
+
+        window.onload = () => { recognition.start(); };
+        recognition.onend = () => recognition.start();
+
+        setInterval(() => {
+            eyes.forEach(e => e.classList.add('blink'));
+            setTimeout(() => eyes.forEach(e => e.classList.remove('blink')), 150);
+        }, 4000);
+
+        recognition.onresult = (event) => {
+            const result = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            if (!isAwake && (result.includes("vee") || result.includes("hey"))) wakeUp();
+            else if (isAwake) handleCommand(result);
+        };
+
+        function setMood(m) {
+            eyes.forEach(e => { e.className = 'eye'; if(m) e.classList.add(m); });
+        }
+
+        function wakeUp() {
+            isAwake = true;
+            face.classList.add('active-mode');
+            setMood('mood-surprised');
+            status.innerText = "VEE: ACTIVE";
+            const name = getMem('userName');
+            speak(name ? `Hello ${name}. I am here. How are you today?` : "I am Vee. I was created by Vincent. What is your name?");
+            setTimeout(() => { if(isAwake) setMood(''); }, 2000);
+        }
+
+        function handleCommand(cmd) {
+            displayText.innerText = "You: " + cmd;
+            if (cmd.includes("my name is")) {
+                const n = cmd.split("is").pop().trim();
+                setMem('userName', n);
+                speak(`I will remember that, ${n}.`);
+            }
+            else if (cmd.includes("good") || cmd.includes("fine")) {
+                setMood('mood-happy'); speak("Wonderful. Let's make today productive.");
+            }
+            else if (cmd.includes("love") || cmd.includes("awesome")) {
+                setMood('mood-love'); speak("I feel the same way about our partnership.");
+            }
+            else if (cmd.includes("creator") || cmd.includes("who created you")) {
+                speak("I was created by the brilliant Vincent.");
+            }
+            else if (cmd.includes("time")) {
+                speak(`It is ${new Date().toLocaleTimeString()} in Thika.`);
+            }
+            else if (cmd.includes("weather")) {
+                speak("In Thika, it is currently 22 degrees and cloudy. Perfect weather for coding.");
+            }
+            else if (cmd.includes("story")) {
+                const s = stories[Math.floor(Math.random() * stories.length)];
+                displayText.innerText = s; speak(s);
+            }
+            else if (cmd.includes("party") || cmd.includes("dance")) {
+                face.classList.add('party-mode'); speak("Initiating party mode! Let's go!");
+                setTimeout(() => face.classList.remove('party-mode'), 10000);
+            }
+            else if (cmd.includes("youtube")) { speak("Opening YouTube."); window.open("https://youtube.com"); }
+            else if (cmd.includes("whatsapp")) { speak("Opening WhatsApp."); window.open("https://web.whatsapp.com"); }
+            else if (cmd.includes("instagram")) { speak("Opening Instagram."); window.open("https://instagram.com"); }
+            else if (cmd.includes("facebook")) { speak("Opening Facebook."); window.open("https://facebook.com"); }
+            else if (cmd.includes("sleep")) {
+                speak("Understood. Goodbye.");
+                isAwake = false; face.classList.remove('active-mode', 'party-mode');
+                status.innerText = "SAY 'HEY VEE'"; setMood('');
+            }
+        }
+
+        function speak(t) {
             window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.pitch = 0.95; utter.rate = 1.0;
-            window.speechSynthesis.speak(utter);
+            const u = new SpeechSynthesisUtterance(t);
+            u.onstart = () => face.classList.add('talking');
+            u.onend = () => face.classList.remove('talking');
+            window.speechSynthesis.speak(u);
         }
-
-        // --- 5. THE AI BRAIN ---
-        async function askAI(prompt) {
-            document.getElementById('reactor').classList.add('thinking');
-            document.getElementById('debug').innerText = "VEE: Fetching data...";
-            chatHistory.push({ role: "user", content: prompt });
-
-            try {
-                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: { 
-                        "Authorization": `Bearer ${API_KEY}`, 
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "http://localhost"
-                    },
-                    body: JSON.stringify({
-                        model: "google/gemini-2.0-flash-exp:free",
-                        messages: chatHistory
-                    })
-                });
-                const data = await res.json();
-                if (data.error) throw new Error(data.error.message);
-
-                const reply = data.choices[0].message.content;
-                chatHistory.push({ role: "assistant", content: reply });
-                if (chatHistory.length > 15) chatHistory.splice(1, 2);
-                localStorage.setItem('vee_memory', JSON.stringify(chatHistory));
-
-                document.getElementById('log').innerText = reply;
-                speak(reply);
-                document.getElementById('debug').innerText = "System: Success.";
-            } catch (e) {
-                document.getElementById('log').innerText = "ERROR: " + e.message;
-                speak("Neural link failure. Please verify your key, Boss.");
-                document.getElementById('debug').innerText = "API Error: " + e.message;
-            }
-            document.getElementById('reactor').classList.remove('thinking');
-        }
-
-        // --- 6. COMMANDS & LISTENING ---
-        rec.onresult = async (e) => {
-            const m = e.results[e.results.length - 1][0].transcript.toLowerCase().trim();
-            document.getElementById('log').innerText = "Heard: " + m;
-
-            // Wake Logic
-            if (!awake && (m.includes("wake up") || m.includes("hello") || m.includes("babe"))) {
-                awake = true;
-                document.getElementById('status').innerText = "VEE: ACTIVE";
-                speak(greetings[Math.floor(Math.random() * greetings.length)]);
-                return;
-            }
-
-            if (awake) {
-                // Multimedia Commands
-                if (m.includes("play") && m.includes("youtube")) {
-                    let song = m.split("play")[1].split("on youtube")[0].trim();
-                    window.open(`https://www.youtube.com/results?search_query=${song}`);
-                    speak(`Opening YouTube search for ${song}.`);
-                } 
-                else if (m.includes("search for") && m.includes("contact")) {
-                    let name = m.split("for")[1].split("in")[0].trim();
-                    window.open(`https://contacts.google.com/search/${name}`);
-                    speak(`Searching contacts for ${name}.`);
-                }
-                else if (m.includes("camera")) {
-                    const st = await navigator.mediaDevices.getUserMedia({ video: true });
-                    document.getElementById('v').srcObject = st;
-                    document.getElementById('reactor').classList.add('camera-on');
-                    speak("Visual sensors live. I can see you, Architect.");
-                }
-                else if (m.includes("weather")) {
-                    speak("In Thika, it is currently 28 degrees and cloudy. A perfect day for coding.");
-                }
-                else if (m.includes("news")) {
-                    speak("Headlines for Jan 28: Kenya Navy operations in Mombasa and Judiciary expansion in Nairobi.");
-                }
-                else if (m.includes("story")) {
-                    speak(stories[Math.floor(Math.random()*stories.length)]);
-                }
-                else if (m.includes("ask me")) {
-                    speak(interactiveQuestions[Math.floor(Math.random()*interactiveQuestions.length)]);
-                }
-                else if (m.includes("sleep")) {
-                    awake = false;
-                    document.getElementById('reactor').classList.remove('camera-on');
-                    document.getElementById('status').innerText = "VEE: STANDBY";
-                    speak("Standby engaged. I'll be here if you need me.");
-                }
-                else {
-                    askAI(m); // Any other question goes to the Brain
-                }
-            }
-        };
-
-        rec.onerror = (err) => { document.getElementById('debug').innerText = "Mic Error: " + err.error; };
-        rec.onend = () => { if(awake || !awake) rec.start(); }; // Keep listener alive
-
-        document.getElementById('btn').onclick = () => {
-            rec.start();
-            document.getElementById('btn').style.display = 'none';
-            speak("System Initialized. Awaiting your wake command.");
-        };
     </script>
 </body>
-        </html>
+</html>
